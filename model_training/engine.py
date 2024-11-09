@@ -1,7 +1,7 @@
 import logging
 import simulation_params
 from game import Game
-from player import Player
+from player import Player, RandomPlayer
 
 
 def setup_logging() -> None:
@@ -20,20 +20,24 @@ def setup_logging() -> None:
 
 def run_simulations() -> None:
     logging.info('Simulation started')
-    game_data = []
+    all_game_data = []
     for i in range(simulation_params.NUMBER_OF_GAMES):
         logging.info(f'Simulation {i+1} started')
 
         # Initialize the game
-        player_1 = Player()
-        player_2 = Player()
+        player_1 = RandomPlayer('Player 1',token=1)
+        player_2 = RandomPlayer('Player 2',token=2)
         game = Game(player_1, player_2)
-        while not game.is_over():
-            game.save_state()
+        while not game.is_over:
+            # game.save_state()
             game.play_turn()
-        game.save_state()
-        game_data.append(game.get_data())
-
+            game.check_for_win()
+        if game.winner != 'Tie':
+            logging.info(f'The winner of the game was {game.winner}!')
+        game_data = game.get_data()
+        game_data['game_id'] = i
+        # game_data['winner'] = game.winner
+        all_game_data.append(game_data)
 
 
         logging.info(f'Simulation {i+1} done')

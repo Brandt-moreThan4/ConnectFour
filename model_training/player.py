@@ -1,8 +1,10 @@
 from board import Board
 
 class Player:
-    def __init__(self, name: str) -> None:
+    def __init__(self, name: str,token:int) -> None:
         self.name = name
+        # self.color = color
+        self.token = token
 
     def __str__(self) -> str:
         return self.name
