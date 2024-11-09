@@ -1,3 +1,4 @@
+import pandas as pd
 import logging
 import simulation_params
 from game import Game
@@ -42,6 +43,8 @@ def run_simulations() -> None:
 
         logging.info(f'Simulation {i+1} done')
 
+    all_game_data = pd.concat(all_game_data)
+    all_game_data.to_csv('model_training/data/simulation_data.csv',index=False)
 
 
 if __name__ == '__main__':
