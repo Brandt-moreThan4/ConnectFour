@@ -12,11 +12,10 @@ h1 {
 
 #board {
     display: grid;
-    grid-template-columns: repeat(7, 50px);
+    grid-template-columns: repeat(7, 50px); /* 7 columns */
     grid-gap: 5px;
     margin: 20px auto;
     max-width: 400px;
-    height: auto; /* Ensure there is enough height for the grid rows */
     border: 2px solid #000;
 }
 
