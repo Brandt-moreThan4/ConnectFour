@@ -97,10 +97,13 @@ function disableBoard() {
 }
 
 function checkWin(row, col) {
+    // Helper function to count consecutive pieces in a specified direction
     function count(directionRow, directionCol) {
         let r = row + directionRow;
         let c = col + directionCol;
         let count = 0;
+
+        // Continue counting while within board bounds and pieces match the current player
         while (
             r >= 0 &&
             r < rows &&
@@ -109,16 +112,17 @@ function checkWin(row, col) {
             board[r][c] === currentPlayer
         ) {
             count++;
-            r += directionRow;
-            c += directionCol;
+            r += directionRow; // Move in the specified row direction
+            c += directionCol; // Move in the specified column direction
         }
-        return count;
+        return count; // Return the count of matching pieces
     }
 
+    // Check for four-in-a-row in various directions
     return (
-        count(0, 1) + count(0, -1) >= 3 || // Horizontal
-        count(1, 0) + count(-1, 0) >= 3 || // Vertical
-        count(1, 1) + count(-1, -1) >= 3 || // Diagonal \
-        count(1, -1) + count(-1, 1) >= 3   // Diagonal /
+        count(0, 1) + count(0, -1) >= 3 || // Horizontal check (left + right)
+        count(1, 0) + count(-1, 0) >= 3 || // Vertical check (up + down)
+        count(1, 1) + count(-1, -1) >= 3 || // Diagonal \ (bottom-left to top-right)
+        count(1, -1) + count(-1, 1) >= 3   // Diagonal / (bottom-right to top-left)
     );
 }
