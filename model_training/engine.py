@@ -1,6 +1,6 @@
 import pandas as pd
 import logging
-import simulation_params
+import model_training.constants as constants
 from game import Game
 from player import Player, RandomPlayer
 
@@ -22,7 +22,7 @@ def setup_logging() -> None:
 def run_simulations() -> None:
     logging.info('Simulation started')
     all_game_data = []
-    for i in range(simulation_params.NUMBER_OF_GAMES):
+    for i in range(constants.NUMBER_OF_GAMES):
         logging.info(f'Simulation {i+1} started')
 
         # Initialize the game

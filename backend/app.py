@@ -1,6 +1,9 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS  # Import the CORS module
+import time
+
 from bot_logic import get_bot_move
+
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes by default
@@ -19,6 +22,9 @@ def get_move():
 
     # Call the function to determine the bot's move
     col = get_bot_move(board)
+
+    # It's unnerving if the bot plays so quickly
+    time.sleep(1)
 
     # Return the bot's chosen column as a JSON response
     return jsonify({"column": col})

@@ -2,9 +2,15 @@ import numpy as np
 # from player import Player
 from typing import Union
 
+# Feels sloppy?
+TOKEN_MAP = {'red':1,'yellow':2}
+VALID_TOKENS = [1,2]
+
 class Board:
     def __init__(self) -> None:
         self.grid = np.zeros((6,7))
+        self.token_1 = 1
+        self.token_2 = 2
 
     def __str__(self) -> str:
         return str(self.grid)
@@ -18,7 +24,23 @@ class Board:
         bool_grid = self.grid == token
         return is_connect_four(bool_grid)
 
-    
+    def check_any_winner(self) -> bool:
+        '''Check if either player has won the game.'''
+        return self.check_winner(self.token_1) or self.check_winner(self.token_2)
+
+    @staticmethod
+    def from_lists(board_data:list[list]) -> 'Board':
+        '''Convert a list of strings to a numpy array.'''
+        board = Board()
+        for row in range(6):
+            for col in range(7):
+                cell_value = board_data[row][col]
+                if cell_value is not None:
+                    board.grid[row,col] = TOKEN_MAP[cell_value]
+        
+        return board
+
+
     def is_full(self) -> bool:
         '''Check if the board is full.'''
         return np.all(self.grid != 0)
