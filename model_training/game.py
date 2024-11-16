@@ -32,13 +32,12 @@ class GameData:
 
 
 class Game:
-    def __init__(self,p1:Player,p2:Player):
+    def __init__(self,p1:Player,p2:Player,game_id:str):
         self.p1 = p1
         self.p2 = p2
         self.is_over = False
         self.board = Board()
         self.current_player = p1
-        game_id = self.get_game_id()
         self.game_data = GameData(player_one_id=p1.player_id,player_two_id=p2.player_id,game_id=game_id)
 
 
@@ -49,34 +48,10 @@ class Game:
         self.game_data.moves.append(col_chosen)
         self.switch_player()
         
-    # Create the game id as the current date and time in milliseconds
-    def get_game_id(self) -> str:
-        return datetime.now().strftime('%Y%m%d%H%M%S%f')
     
     def switch_player(self):
         self.current_player = self.p1 if self.current_player == self.p2 else self.p2
     
-
-    
-    def get_data(self) -> pd.DataFrame:
-        '''Return the game data in a pretty data frame. '''
-
-        # # Add on a final row that shows the final board state?
-        # final_board = self.board.grid
-        # flat_grid = final_board.flatten()
-        # cells = {f'x_{i}':flat_grid[i] for i in range(len(flat_grid))}
-        # data = {
-        #     'turn': self.turn,
-        #     'player_turn': self.current_player,
-        #     'column_chosen': self.last_move}
-
-
-        # Add on the winner
-        data = pd.DataFrame(self.game_data)
-        data['winner'] = self.winner
-        return data
-
-
     
     def check_for_win(self) -> bool:
 
@@ -99,7 +74,7 @@ class Game:
         # Check for tie
         if self.board.is_full():
             self.is_over = True
-            logging.info(f'The game is a tie on turn {self.turn}!')
+            # logging.info(f'The game is a tie on turn {self.game}!')
             self.game_data.winner_id = 'Tie'
             return True
         
