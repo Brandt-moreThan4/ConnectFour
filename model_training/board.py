@@ -30,7 +30,7 @@ class Board:
 
     @staticmethod
     def from_lists(board_data:list[list]) -> 'Board':
-        '''Convert a list of strings to a numpy array.'''
+        '''Convert a list of strings to a Board object.'''
         board = Board()
         for row in range(6):
             for col in range(7):
