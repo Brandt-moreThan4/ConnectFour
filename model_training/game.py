@@ -1,8 +1,34 @@
 import pandas as pd
 import logging
+from dataclasses import dataclass, field
+from datetime import datetime
 
 from player import Player
 from board import Board
+
+
+@dataclass
+class GameData:
+    game_id: str
+    player_one_id: str
+    player_two_id: str
+    winner_id: str = ''
+    moves: list[int] = field(default_factory=list)
+
+    @property
+    def turns(self) -> int:
+        return len(self.moves)
+
+    def to_dict(self) -> dict:
+        return {
+            'game_id': self.game_id,
+            'player_one_id': self.player_one_id,
+            'player_two_id': self.player_two_id,
+            'winner_id': self.winner_id,
+            'moves': self.moves,
+            'turns': self.turns
+        }
+
 
 
 class Game:
@@ -12,40 +38,25 @@ class Game:
         self.is_over = False
         self.board = Board()
         self.current_player = p1
-        self.turn = 0
-        self.winner = None
-        self.last_move:int = None
-        self.game_data = []
+        game_id = self.get_game_id()
+        self.game_data = GameData(player_one_id=p1.player_id,player_two_id=p2.player_id,game_id=game_id)
+
 
     def play_turn(self):
-        self.turn += 1
+
         col_chosen = self.current_player.get_move(self.board)
-        # We want to save the state using the information we had here and what decision was made.
-        self.save_state(col_chosen)
-        self.board.make_move(col_chosen,self.current_player.token)
+        self.board.make_move(col_chosen,self.current_player.token)      
+        self.game_data.moves.append(col_chosen)
         self.switch_player()
         
+    # Create the game id as the current date and time in milliseconds
+    def get_game_id(self) -> str:
+        return datetime.now().strftime('%Y%m%d%H%M%S%f')
     
     def switch_player(self):
         self.current_player = self.p1 if self.current_player == self.p2 else self.p2
     
-    def save_state(self,col_chosen:int):
-        # Things we want to save: turn, player turn, column chosen, board state
 
-        # Convert the board state into a dictionary. x_0 represents the top left cell, x2 the cell to the right of that,
-        # x_41 the bottom right cell.
-        # Later I need to refactor this into a method in the board class. (And make the board posisble to instatntiate with a grid
-        # in the dictionary format)
-
-        grid = self.board.grid
-        flat_grid = grid.flatten()
-        cells = {f'x_{i}':flat_grid[i] for i in range(len(flat_grid))}
-        data = {
-            'turn': self.turn,
-            'player_turn': self.current_player,
-            'column_chosen': col_chosen}
-        data = {**data,**cells}
-        self.game_data.append(data)
     
     def get_data(self) -> pd.DataFrame:
         '''Return the game data in a pretty data frame. '''
@@ -67,7 +78,7 @@ class Game:
 
 
     
-    def check_for_win(self):
+    def check_for_win(self) -> bool:
 
         # Check if the current player has won
         winner = None
@@ -81,15 +92,15 @@ class Game:
 
         if winner is not None:
             self.is_over = True
-            self.winner = winner
-            logging.info(f'{self.winner} has won the game on turn {self.turn}!')
+            self.game_data.winner_id = winner.player_id
+            # logging.info(f'{winner} has won the game on turn {self.turn}!')
             return True
         
         # Check for tie
         if self.board.is_full():
             self.is_over = True
             logging.info(f'The game is a tie on turn {self.turn}!')
-            self.winner = 'Tie'
+            self.game_data.winner_id = 'Tie'
             return True
         
         return False
