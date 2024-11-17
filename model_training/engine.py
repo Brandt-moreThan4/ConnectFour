@@ -8,11 +8,11 @@ import uuid
 
 # import constants as constants
 from game import Game
+from board import Board
 from player import  RandomNotStupidPlayer, RandomNaivePlayer
 import player
 
 
-CHECK_POINTS = 200
 
 def setup_logging() -> None:
     '''Set up logging for the simulation which will log to a file and the terminal.'''
@@ -26,23 +26,10 @@ def setup_logging() -> None:
     # logging.getLogger().addHandler(console_handler)
 
 
-def get_game_id() -> str:
-    # Get current timestamp with microsecond precision
-    timestamp = int(time.time() * 1_000_000)
-    
-    # Generate a random number
-    random_num = random.randint(0, 999999)
-    
-    # Get a portion of a UUID
-    uuid_part = uuid.uuid4().hex[:8]
-    
-    # Combine all parts
-    unique_id = f"{timestamp:015d}-{random_num:06d}-{uuid_part}"
-    
-    return unique_id
 
 
-def run_simulations(output_file:str,simulation_count:int) -> None:
+
+def run_simulation_arena(output_file:str,simulation_count:int,checkpoints=500) -> None:
 
     all_game_data = []
     for i in range(simulation_count):
@@ -53,13 +40,12 @@ def run_simulations(output_file:str,simulation_count:int) -> None:
         player_a = player.MonteCarloPlayer('Player 1',token=1,simulations=100)
         player_b = RandomNotStupidPlayer('Player 1',token=2)
 
-        game_id = get_game_id()
 
         # Alternate the starting player
         if i % 2 == 0:
-            game = Game(p1=player_a, p2= player_b, game_id=game_id)
+            game = Game(p1=player_a, p2= player_b)
         else:
-            game = Game(p1=player_b, p2=player_a, game_id=game_id)
+            game = Game(p1=player_b, p2=player_a)
         while not game.is_over:
             game.play_turn()
             game.check_for_win()
@@ -67,7 +53,7 @@ def run_simulations(output_file:str,simulation_count:int) -> None:
         all_game_data.append(game.game_data.to_dict())
         logging.info(f'Simulation {i+1} done')
 
-        if i % CHECK_POINTS == 0:
+        if i % checkpoints == 0:
             logging.info(f'Checkpoint: {i} simulations done')
             with open(output_file,'w') as f:
                 json.dump(all_game_data,f)
@@ -75,11 +61,51 @@ def run_simulations(output_file:str,simulation_count:int) -> None:
     with open(output_file,'w') as f:
         json.dump(all_game_data,f)
 
+
+def run_simulation_arena(output_file:str,simulation_count:int,checkpoints=500) -> None:
+
+    stupid_player = player.RandomNaivePlayer('Stupid',token=None)
+    not_stupid_player = player.RandomNotStupidPlayer('Not Stupid',token=None)
+    monty_50 = player.MonteCarloPlayer('Monty50',token=None,simulations=50)
+    monty_100 = player.MonteCarloPlayer('Monty100',token=None,simulations=100)
+    monty_200 = player.MonteCarloPlayer('Monty200',token=None,simulations=200)
+    monty_500 = player.MonteCarloPlayer('Monty500',token=None,simulations=500)
+    monty_1000 = player.MonteCarloPlayer('Monty1000',token=None,simulations=1000)
+
+
+    arena = [stupid_player,not_stupid_player,monty_50,monty_100,monty_200,monty_500,monty_1000]
+
+    all_game_data = []
+    for i in range(simulation_count):
+
+        # Draw two players randomly and give them their tokens
+        player_1, player_2 = random.sample(arena,2)
+        player_1.token = Board.TOKEN_1
+        player_2.token = Board.TOKEN_2
+
+        game = Game(p1=player_1, p2=player_2)
+
+        while not game.is_over:
+            game.play_turn()
+            game.check_for_win()
+
+        all_game_data.append(game.game_data.to_dict())
+        logging.info(f'Simulation {i+1} done')
+
+        if i % checkpoints == 0:
+            logging.info(f'Checkpoint: {i} simulations done')
+            with open(output_file,'w') as f:
+                json.dump(all_game_data,f)
+
+    with open(output_file,'w') as f:
+        json.dump(all_game_data,f)        
+
 if __name__ == '__main__':
     DATA_FILE = 'model_training/data/simulation_data_testing.json'
-    DATA_FILE = 'model_training/data/simulation_data_testing.json'    
-    NUMBER_OF_GAMES = 2000
+    DATA_FILE = 'model_training/data/arena_simulation.json'    
+    NUMBER_OF_GAMES = 10_000
+    CHECK_POINTS = 100
     setup_logging()
-    run_simulations(output_file=DATA_FILE,simulation_count=NUMBER_OF_GAMES)
+    run_simulation_arena(output_file=DATA_FILE,simulation_count=NUMBER_OF_GAMES)
 
     # print('!!! Simulation Done!!!')

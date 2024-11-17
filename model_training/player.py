@@ -1,4 +1,5 @@
 from board import Board, simulate_game, monte_carlo_tree_search
+# from .board import Board, simulate_game, monte_carlo_tree_search
 
 
 class Player:

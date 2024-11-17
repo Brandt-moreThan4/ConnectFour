@@ -29,7 +29,8 @@ def get_bot_move(board_data) -> int | None:
     
 
     board = Board.from_lists(board_data)
-    bot_player = player.RandomNotStupidPlayer('bot', 2)
+    # bot_player = player.RandomNotStupidPlayer('bot', 2)
+    bot_player = player.MonteCarloPlayer('bot', 2, 1000)
 
     # Randomly select a column for now
     if board.is_full():

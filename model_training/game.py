@@ -2,6 +2,9 @@ import pandas as pd
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime
+import time
+import random
+import uuid
 
 from player import Player
 from board import Board
@@ -15,6 +18,8 @@ class GameData:
     first_mover_id: str
     winner_id: str = ''
     moves: list[int] = field(default_factory=list)
+    start_time: datetime = field(default_factory=datetime.now)
+    end_time: datetime = None
 
     @property
     def turns(self) -> int:
@@ -34,13 +39,13 @@ class GameData:
 
 
 class Game:
-    def __init__(self,p1:Player,p2:Player,game_id:str):
+    def __init__(self,p1:Player,p2:Player):
         self.p1 = p1
         self.p2 = p2
         self.is_over = False
         self.board = Board()
         self.current_player = p1
-        self.game_data = GameData(player_one_id=p1.player_id,player_two_id=p2.player_id,game_id=game_id,first_mover_id=p1.player_id)
+        self.game_data = GameData(player_one_id=p1.player_id,player_two_id=p2.player_id,game_id=self.get_game_id(),first_mover_id=p1.player_id)
 
 
     def play_turn(self):
@@ -70,12 +75,29 @@ class Game:
         if winner is not None:
             self.is_over = True
             self.game_data.winner_id = winner.player_id
+            self.game_data.end_time = datetime.now()
             return True
         
         # Check for tie
         if self.board.is_full():
             self.is_over = True
             self.game_data.winner_id = 'Tie'
+            self.game_data.end_time = datetime.now()            
             return True
         
         return False
+    
+    def get_game_id(self) -> str:
+        # Get current timestamp with microsecond precision
+        timestamp = int(time.time() * 1_000_000)
+        
+        # Generate a random number
+        random_num = random.randint(0, 999999)
+        
+        # Get a portion of a UUID
+        uuid_part = uuid.uuid4().hex[:8]
+        
+        # Combine all parts
+        unique_id = f"{timestamp:015d}-{random_num:06d}-{uuid_part}"
+        
+        return unique_id
