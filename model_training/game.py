@@ -68,13 +68,11 @@ class Game:
         if winner is not None:
             self.is_over = True
             self.game_data.winner_id = winner.player_id
-            # logging.info(f'{winner} has won the game on turn {self.turn}!')
             return True
         
         # Check for tie
         if self.board.is_full():
             self.is_over = True
-            # logging.info(f'The game is a tie on turn {self.game}!')
             self.game_data.winner_id = 'Tie'
             return True
         
