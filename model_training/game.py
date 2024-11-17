@@ -12,6 +12,7 @@ class GameData:
     game_id: str
     player_one_id: str
     player_two_id: str
+    first_mover_id: str
     winner_id: str = ''
     moves: list[int] = field(default_factory=list)
 
@@ -25,6 +26,7 @@ class GameData:
             'player_one_id': self.player_one_id,
             'player_two_id': self.player_two_id,
             'winner_id': self.winner_id,
+            'first_mover_id': self.first_mover_id,
             'moves': self.moves,
             'turns': self.turns
         }
@@ -38,7 +40,7 @@ class Game:
         self.is_over = False
         self.board = Board()
         self.current_player = p1
-        self.game_data = GameData(player_one_id=p1.player_id,player_two_id=p2.player_id,game_id=game_id)
+        self.game_data = GameData(player_one_id=p1.player_id,player_two_id=p2.player_id,game_id=game_id,first_mover_id=p1.player_id)
 
 
     def play_turn(self):

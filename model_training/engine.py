@@ -8,11 +8,11 @@ import uuid
 
 # import constants as constants
 from game import Game
-from player import  RandomPlayer1, RandomPlayer2
+from player import  RandomNotStupidPlayer, RandomNaivePlayer
 import player
 
 
-CHECK_POINTS = 2000
+CHECK_POINTS = 200
 
 def setup_logging() -> None:
     '''Set up logging for the simulation which will log to a file and the terminal.'''
@@ -49,8 +49,10 @@ def run_simulations(output_file:str,simulation_count:int) -> None:
         # logging.info(f'Simulation {i+1} started')
 
         # player_a = RandomPlayer1('Player 1',token=1)
+        # player_b = RandomPlayer2('Player 2',token=2)        
         player_a = player.MonteCarloPlayer('Player 1',token=1,simulations=100)
-        player_b = RandomPlayer2('Player 2',token=2)
+        player_b = RandomNotStupidPlayer('Player 1',token=2)
+
         game_id = get_game_id()
 
         # Alternate the starting player
@@ -75,7 +77,8 @@ def run_simulations(output_file:str,simulation_count:int) -> None:
 
 if __name__ == '__main__':
     DATA_FILE = 'model_training/data/simulation_data_testing.json'
-    NUMBER_OF_GAMES = 10
+    DATA_FILE = 'model_training/data/simulation_data_testing.json'    
+    NUMBER_OF_GAMES = 2000
     setup_logging()
     run_simulations(output_file=DATA_FILE,simulation_count=NUMBER_OF_GAMES)
 

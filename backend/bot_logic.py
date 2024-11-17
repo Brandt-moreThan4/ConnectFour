@@ -7,7 +7,7 @@ PARENT_DIR = Path(__file__).resolve().parent.parent
 sys.path.append(str(PARENT_DIR))
 
 from model_training.board import Board
-from model_training.player import RandomPlayer
+from model_training import player
 
 
 def get_bot_move(board) -> int | None:
@@ -29,7 +29,7 @@ def get_bot_move(board_data) -> int | None:
     
 
     board = Board.from_lists(board_data)
-    bot_player = RandomPlayer('bot', 2)
+    bot_player = player.RandomNotStupidPlayer('bot', 2)
 
     # Randomly select a column for now
     if board.is_full():
@@ -38,7 +38,3 @@ def get_bot_move(board_data) -> int | None:
         col_to_play = int(bot_player.get_move(board))
         return col_to_play
 
-
-# Convert the board from a list of strings to our Board object
-def convert_board(board_state:list[str]):
-    pass

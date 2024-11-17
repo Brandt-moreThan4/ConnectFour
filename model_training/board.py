@@ -5,13 +5,15 @@ from typing import Union
 
 # Feels sloppy?
 TOKEN_MAP = {'red':1,'yellow':2}
-VALID_TOKENS = [1,2]
 
 class Board:
+
+    TOKEN_1 = 1
+    TOKEN_2 = 2
+
     def __init__(self) -> None:
         self.grid = np.zeros((6,7))
-        self.token_1 = 1
-        self.token_2 = 2
+        self.turn_token = self.TOKEN_1
 
     def __str__(self) -> str:
         return str(self.grid)
@@ -20,7 +22,7 @@ class Board:
         return str(self.grid)
 
     def check_winner(self, token: int) -> bool:
-        """Efficiently checks if a player with the given token has a winning line (4 in a row)."""
+        """Check to see if the provided token has won the game. Start in the top left and move right and down."""
 
         for row in range(6):
             for col in range(7):
@@ -49,7 +51,7 @@ class Board:
 
     def check_any_winner(self) -> bool:
         '''Check if either player has won the game.'''
-        return self.check_winner(self.token_1) or self.check_winner(self.token_2)
+        return self.check_winner(self.TOKEN_1) or self.check_winner(self.TOKEN_2)
 
     @staticmethod
     def from_lists(board_data:list[list]) -> 'Board':
@@ -84,10 +86,10 @@ class Board:
             raise ValueError('This column is already full. You cannot make a move here.')
 
         # Find the first empty row in the column when looking from the bottom up.
-        is_empty = self.grid[:,column] == 0
-        row = np.where(is_empty)[0]
-        row = row[-1]
-        self.grid[row,column] = token
+        empty_rows = np.where(self.grid[:,column] == 0)[0]
+        lowest_empty_row = empty_rows[-1]
+        self.grid[lowest_empty_row,column] = token
+        self.turn_token = switch_token(token)
     
     def is_call_full(self,column:int) -> bool:
         '''Check if the column is full.'''
@@ -105,16 +107,9 @@ class Board:
         '''Return a copy of the board so that we don't modify the original board.'''
         board = Board()
         board.grid = self.grid.copy()
+        board.turn_token = self.turn_token
         return board
     
-    def check_for_obvious_move(self,token:int) -> Union[int,None]:
-        '''Check if there is an obvious move to make. (A single move that will result in a win.)'''
-        for col in self.get_playable_cols():
-            board = self.get_copy()
-            board.make_move(col,token)
-            if board.check_winner(token):
-                return col
-        return None
     
     def check_for_obvious_move(self, token: int) -> Union[int, None]:
         """Check if there is an obvious move to make (a single move that will result in a win)
@@ -139,52 +134,13 @@ class Board:
         return None
 
 
-
-
-diag_matrix_lr = np.identity(4)
-diag_matrix_rl = np.fliplr(np.identity(4))
-
-
-def is_horizontal_victory(bool_grid:np.ndarray) -> bool:
-    # Top to bottom, left to right search
-    for row in range(6):
-        for col in range(4):
-            if sum(bool_grid[row,col:(col+4)]) == 4:
-                return True
-    return False
-
-
-def is_vertical_victory(color_grid:np.ndarray) -> bool:
-    for row in range(3):
-        for col in range(7):
-            if sum(color_grid[row:(row+4),col]) == 4:
-                return True
-    return False
-
-
-def is_diagonal_victory(color_grid:np.ndarray):
-
-    for row in range(3):
-        for col in range(4):
-            if  np.multiply(diag_matrix_lr,color_grid[row:(row+4),col:(col+4)]).sum() == 4 or np.multiply(diag_matrix_rl,color_grid[row:(row+4),col:(col+4)]).sum() == 4 :
-                return True
-    return False
-
-
-def is_connect_four(color_grid:np.ndarray) -> bool:
-    """Returns true if this player has connect 4 anywhere."""
-
-    if is_horizontal_victory(color_grid) or is_vertical_victory(color_grid) or is_diagonal_victory(color_grid):
-        return True
-    else:
-        return False
     
 
 class Node:
     def __init__(self, state: Board, parent=None):
         self.state = state  # Board state
-        self.parent = parent  # Parent node
-        self.children = []  # List of child nodes
+        self.parent:Node = parent  # Parent node
+        self.children:list[Node] = []  # List of child nodes
         self.visits = 0  # Visit count
         self.value = 0  # Accumulated value (e.g., win/loss)
 
@@ -208,56 +164,91 @@ class Node:
         return col_choice
     
     def __repr__(self) -> str:
-        return f'Col({self.col_choice})'
+        # Show some stats about the node
+        return f'Col({self.col_choice}) - V: {self.visits} - W: {self.value} - D: {self.depth}'
     
     def __str__(self) -> str:
         return f'Col({self.col_choice})'
+    
+    def calc_ucb(self, exploration_weight=1.4) -> float:
+        '''Calculate the Upper Confidence Bound (UCB) for the node.'''
 
-    def best_child(self, exploration_weight=1.4):
-        choices_weights = [
-            (child.value / (child.visits + 1)) + exploration_weight * np.sqrt(np.log(self.visits + 1) / (child.visits + 1))
-            for child in self.children
-        ]
-        return self.children[np.argmax(choices_weights)]
+        if self.visits == 0:
+            return float('inf')
+        
+        avg_reward = self.value / self.visits
+        exploration_term = np.sqrt(np.log(self.parent.visits) / self.visits)
+
+        ucb = avg_reward + exploration_weight * exploration_term
+        return ucb
+
+    def best_child(self, exploration_weight=1.4) -> 'Node':
+        '''Select the child node with the best UCB value. '''
 
 
+        child_ucbs = [child.calc_ucb(exploration_weight) for child in self.children]
+        # Could prolly break ties randomly instead of always choosing the first one
+
+        return self.children[np.argmax(child_ucbs)]
+    
+    @property
+    def depth(self) -> int:
+        '''Return the depth of the node in the tree.'''
+        if self.parent is None:
+            return 0
+        return 1 + self.parent.depth
 
 
-def mcts(root_state: Board,perspective_token:int , itermax=50, exploration_weight=1.4) -> int:
+def switch_token(token:int) -> int:
+    '''Switch the token from 1 to 2 and vice versa.'''
+    return Board.TOKEN_1 if token == Board.TOKEN_2 else Board.TOKEN_2    
+
+
+# Updated mcts function with token counting logic
+def monte_carlo_tree_search(root_state: Board, perspective_token: int, itermax=100, exploration_weight=1.4) -> int:
+    # Initialize the root node of the search tree with the provided board state
     root = Node(root_state)
 
+    # Perform a specified number of simulations (iterations)
     for sim in range(itermax):
-        node = root
-        # Selection
+        node = root  # Start at the root node for each simulation
+
+        # Selection Phase:
+        # Traverse the tree, selecting child nodes based on their exploration-exploitation balance.
+        # This continues until we reach a node that is not fully expanded or a leaf node.
         while node.is_fully_expanded() and node.children:
             node = node.best_child(exploration_weight)
-            lol = node.col_choice
-        
-        # Expansion
-        if not node.is_fully_expanded():
-            possible_moves = node.state.get_playable_cols()
-            for move in possible_moves:
-                new_state = node.state.get_copy()
-                new_state.make_move(move, 1 if node.state.grid.sum() % 2 == 0 else 2)
-                child_node = Node(new_state, parent=node)
-                node.children.append(child_node)
-            node = random.choice(node.children)
 
-        # Simulation
+        # Expansion Phase:
+        # If the selected node is not fully expanded, add one or more child nodes corresponding to possible moves.
+        if not node.is_fully_expanded():
+            possible_moves = node.state.get_playable_cols()  # Get available moves (playable columns)
+            for move in possible_moves:
+                new_state = node.state.get_copy()  # Create a copy of the current board state
+                new_state.make_move(move, new_state.turn_token)  # Make the move on the new state
+                child_node = Node(new_state, parent=node)  # Create a new node with the updated state
+                node.children.append(child_node)  # Add the new node as a child
+            node = random.choice(node.children)  # Choose one of the newly added child nodes for simulation
+
+        # Simulation Phase:
+        # Simulate a random game from the current node's state until the game ends (win/loss/tie).
         result = simulate_game(node.state, perspective_token)
 
-        # Backpropagation
+        # Backpropagation Phase:
+        # Propagate the simulation result up the tree, updating visit counts and node values.
         while node is not None:
-            node.visits += 1
-            node.value += result
-            node = node.parent
+            node.visits += 1  # Increment the visit count for the node
+            node.value += result  # Update the accumulated value (e.g., win/loss score)
+            node = node.parent  # Move up to the parent node
 
-    # Return the move leading to the best node. 
+    # After all simulations, select the child node with the best win rate (exploitation only)
     best_move_node = root.best_child(exploration_weight=0)
 
+    # Extract the column choice that corresponds to the best move found
     best_move_col = best_move_node.col_choice
 
-    return best_move_col
+    return best_move_col  # Return the column that leads to the best move
+
 
 
 
@@ -266,7 +257,7 @@ def simulate_game(board_state:Board,perspective_token:int) -> int:
     # We want to implement a Monte Carlo simulation to determine the best move to make.
     board = board_state.get_copy()
 
-    other_token = 2 if perspective_token == 1 else 1
+    other_token = switch_token(perspective_token)
 
     turn_token = perspective_token
     
@@ -282,15 +273,15 @@ def simulate_game(board_state:Board,perspective_token:int) -> int:
         board.make_move(move,turn_token)
 
         # Switch the turn token
-        turn_token = 1 if turn_token == 2 else 2
+        turn_token = switch_token(turn_token)
 
-    
+    # Check for win, loss or tie and distribute points accordingly
     if board.check_winner(perspective_token):
         return 1
     elif board.check_winner(other_token):
         return -1
     else:
-        return 0 # Tie
+        return 0 
 
 
     
@@ -303,9 +294,10 @@ if __name__ == '__main__':
     board.make_move(1,1)
     board.make_move(2,2)
     board.make_move(2,1)
+    board.make_move(3,2)
 
     # Now we can test out the MCTS algorithm
-    best_move = mcts(board,1,itermax=100)
+    best_move = monte_carlo_tree_search(board,1,itermax=100)
 
     print(f'The best move to make is column {best_move}')
     print(board)

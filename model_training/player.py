@@ -1,4 +1,4 @@
-from board import Board, simulate_game, mcts
+from board import Board, simulate_game, monte_carlo_tree_search
 
 
 class Player:
@@ -24,23 +24,27 @@ class Player:
         raise NotImplementedError
     
 
-class RandomPlayer1(Player):
-
-    @property
-    def player_id(self) -> str:
-        return 'random_move_1'
-
-    def _get_move(self, board: Board) -> int:
-        return board.get_random_move()
-    
-class RandomPlayer2(Player):
+class RandomNaivePlayer(Player):
     
     @property
     def player_id(self) -> str:
-        return 'random_move_2'
+        return 'random_naive'
 
     def _get_move(self, board: Board) -> int:
         return board.get_random_move()
+
+class RandomNotStupidPlayer(Player):
+
+    @property
+    def player_id(self) -> str:
+        return 'random_not_stupid'
+
+    def _get_move(self, board: Board) -> int:
+        obvious_move = board.check_for_obvious_move(self.token)
+        if obvious_move is not None:
+            return obvious_move
+        else:
+            return board.get_random_move()
     
 
 class MonteCarloPlayer(Player):
@@ -53,7 +57,7 @@ class MonteCarloPlayer(Player):
         return f'monte_carlo_{self.simulations}'
     
     def _get_move(self, board: Board) -> int:
-        # Simulate moves
-        
-        best_move = mcts(board, perspective_token=self.token,itermax= self.simulations)
-        return best_move
+        move = board.check_for_obvious_move(self.token)
+        if move is None:
+            move = monte_carlo_tree_search(board, perspective_token=self.token,itermax= self.simulations)
+        return move

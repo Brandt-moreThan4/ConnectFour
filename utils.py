@@ -74,6 +74,7 @@ def create_master_markdown(folder_path, output_file='master_project_document.md'
 
 # Example usage:
 FOLDER = r'C:\Users\User\OneDrive\Desktop\Code\ConnectFour'
+FOLDER = r'C:\Users\User\OneDrive\Desktop\Code\ConnectFour\model_training'
 EXCLUSIONS = ['.git', 'node_modules']  # Add any other folder/file names you want to exclude
 
 create_master_markdown(FOLDER, exclusions=EXCLUSIONS)
