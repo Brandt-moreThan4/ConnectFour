@@ -60,5 +60,5 @@ class MonteCarloPlayer(Player):
     def _get_move(self, board: Board) -> int:
         move = board.check_for_obvious_move(self.token)
         if move is None:
-            move = monte_carlo_tree_search(board, perspective_token=self.token,itermax= self.simulations)
+            move = monte_carlo_tree_search(board, perspective_token=self.token,itermax=self.simulations)
         return move

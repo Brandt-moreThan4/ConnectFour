@@ -33,7 +33,9 @@ class GameData:
             'winner_id': self.winner_id,
             'first_mover_id': self.first_mover_id,
             'moves': self.moves,
-            'turns': self.turns
+            'turns': self.turns,
+            'start_time': self.start_time.isoformat(),
+            'end_time': self.end_time.isoformat() 
         }
 
 
