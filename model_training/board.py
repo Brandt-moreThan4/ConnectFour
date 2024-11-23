@@ -66,6 +66,15 @@ class Board:
         return board
 
 
+    @staticmethod
+    def from_turn_sequence(turn_sequence:list[int]) -> 'Board':
+        '''Convert a list of turn sequences into a Board object.'''
+        board = Board()
+        for turn in turn_sequence:
+            board.make_move(turn,board.turn_token)
+        return board
+    
+
     def is_full(self) -> bool:
         '''Check if the board is full.'''
         return np.all(self.grid != 0)

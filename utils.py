@@ -1,4 +1,6 @@
 import os
+import json
+from pathlib import Path
 
 def get_folder_tree(folder_path, exclusions=None, indent=''):
     if exclusions is None:
@@ -71,10 +73,46 @@ def create_master_markdown(folder_path, output_file='master_project_document.md'
         md_file.write(markdown_content)
 
 
+def combine_jsons(folder_path, output_file='combined.json', exclusions:list=None):
+    if exclusions is None:
+        exclusions = []
+
+    combined_data = []
+    for root, _, files in os.walk(folder_path):
+        # Skip excluded directories
+        if any(exclusion in root for exclusion in exclusions):
+            continue
+        for file in files:
+            # Skip excluded files
+            if file in exclusions:
+                continue
+
+            # Get the full file path
+            file_path = os.path.join(root, file)
+
+            # Only include JSON files
+            if file.endswith('.json'):
+                try:
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        data = json.load(f)
+                        # combined_data.append(data)
+                        combined_data.extend(data)
+                except Exception as e:
+                    print(f"Error reading file: {e}")
+
+    # Write the combined data to a single JSON file
+    with open(output_file, "w", encoding="utf-8") as json_file:
+        json.dump(combined_data, json_file, indent=4)
+
 
 # Example usage:
 FOLDER = r'C:\Users\User\OneDrive\Desktop\Code\ConnectFour'
 FOLDER = r'C:\Users\User\OneDrive\Desktop\Code\ConnectFour\model_training'
 EXCLUSIONS = ['.git', 'node_modules']  # Add any other folder/file names you want to exclude
 
-create_master_markdown(FOLDER, exclusions=EXCLUSIONS)
+# create_master_markdown(FOLDER, exclusions=EXCLUSIONS)
+
+# Combine all JSON files in the folder and subfolders
+DATA_FOLDER = Path(FOLDER) / 'data'
+DATA_Exclusions = ['stable','old']
+combine_jsons(DATA_FOLDER, output_file=DATA_FOLDER / 'combined.json', exclusions=DATA_Exclusions)
