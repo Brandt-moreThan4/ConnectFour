@@ -1,6 +1,6 @@
-from board import Board, simulate_game, monte_carlo_tree_search
+# from board import Board, simulate_game, monte_carlo_tree_search
 # from .board import Board, simulate_game, monte_carlo_tree_search
-
+from model_training.board import Board, simulate_game, monte_carlo_tree_search
 
 class Player:
     def __init__(self, name: str, token: int) -> None:

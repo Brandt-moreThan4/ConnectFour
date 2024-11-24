@@ -86,6 +86,8 @@ def combine_jsons(folder_path, output_file='combined.json', exclusions:list=None
             # Skip excluded files
             if file in exclusions:
                 continue
+            if any(exclusion in file for exclusion in exclusions):
+                continue
 
             # Get the full file path
             file_path = os.path.join(root, file)
@@ -105,14 +107,17 @@ def combine_jsons(folder_path, output_file='combined.json', exclusions:list=None
         json.dump(combined_data, json_file, indent=4)
 
 
-# Example usage:
-FOLDER = r'C:\Users\User\OneDrive\Desktop\Code\ConnectFour'
-FOLDER = r'C:\Users\User\OneDrive\Desktop\Code\ConnectFour\model_training'
-EXCLUSIONS = ['.git', 'node_modules']  # Add any other folder/file names you want to exclude
+if __name__ == "__main__":
 
-# create_master_markdown(FOLDER, exclusions=EXCLUSIONS)
 
-# Combine all JSON files in the folder and subfolders
-DATA_FOLDER = Path(FOLDER) / 'data'
-DATA_Exclusions = ['stable','old']
-combine_jsons(DATA_FOLDER, output_file=DATA_FOLDER / 'combined.json', exclusions=DATA_Exclusions)
+    # Example usage:
+    FOLDER = r'C:\Users\User\OneDrive\Desktop\Code\ConnectFour'
+    # FOLDER = r'C:\Users\User\OneDrive\Desktop\Code\ConnectFour\model_training'
+    EXCLUSIONS = ['.git', 'node_modules','ipynb']  # Add any other folder/file names you want to exclude
+
+    create_master_markdown(FOLDER, exclusions=EXCLUSIONS)
+
+    # # Combine all JSON files in the folder and subfolders
+    # DATA_FOLDER = Path(FOLDER) / 'data'
+    # DATA_Exclusions = ['stable','old']
+    # combine_jsons(DATA_FOLDER, output_file=DATA_FOLDER / 'combined.json', exclusions=DATA_Exclusions)

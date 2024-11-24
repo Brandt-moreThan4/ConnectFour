@@ -151,7 +151,7 @@ class Board:
 
 
 
-    def display_board(self, player1_color='red', player2_color='yellow', empty_color='white', line_color='black'):
+    def display_board(self, player1_color='red', player2_color='yellow', empty_color='white', line_color='black', background_color='white'):
         """
         Visualize each Connect 4 game state as a separate plot with grid lines.
 
@@ -165,7 +165,12 @@ class Board:
         n_rows, n_cols = (6,7)
 
         fig, ax = plt.subplots(figsize=(n_cols, n_rows * 0.6))
+
+        fig.patch.set_facecolor(background_color)
         
+        # Set the background color of the axes
+        ax.set_facecolor(background_color)
+            
         # Draw the Connect 4 grid
         for row in range(n_rows):
             for col in range(n_cols):
@@ -372,3 +377,4 @@ if __name__ == '__main__':
 
     # print(f'The best move to make is column {best_move}')
     print(board)
+
