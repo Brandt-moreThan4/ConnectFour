@@ -2,6 +2,7 @@ import numpy as np
 import random
 # from player import Player
 from typing import Union
+import matplotlib.pyplot as plt
 
 # Feels sloppy?
 TOKEN_MAP = {'red':1,'yellow':2}
@@ -119,6 +120,12 @@ class Board:
         board.turn_token = self.turn_token
         return board
     
+    @property
+    def turn(self) -> str:
+        '''Return the number of the current turn. Starting at 1 means it will be # of tokens played + 1.'''
+        tokens_played = np.sum(self.grid != 0)
+        return tokens_played + 1
+    
     
     def check_for_obvious_move(self, token: int) -> Union[int, None]:
         """Check if there is an obvious move to make (a single move that will result in a win)
@@ -143,7 +150,60 @@ class Board:
         return None
 
 
-    
+
+    def display_board(self, player1_color='red', player2_color='yellow', empty_color='white', line_color='black'):
+        """
+        Visualize each Connect 4 game state as a separate plot with grid lines.
+
+        Args:
+        - states (list of np.ndarray): A list of 7x6 numpy arrays representing the game states.
+        - player1_color (str): Color for player 1 discs.
+        - player2_color (str): Color for player 2 discs.
+        - empty_color (str): Color for empty slots.
+        - line_color (str): Color for the grid lines.
+        """
+        n_rows, n_cols = (6,7)
+
+        fig, ax = plt.subplots(figsize=(n_cols, n_rows * 0.6))
+        
+        # Draw the Connect 4 grid
+        for row in range(n_rows):
+            for col in range(n_cols):
+                value = self.grid[row, col]
+                if value == 0:  # Empty slot
+                    color = empty_color
+                elif value == 1:  # Player 1
+                    color = player1_color
+                elif value == 2:  # Player 2
+                    color = player2_color
+                else:
+                    raise ValueError("Invalid grid value: must be 0, 1, or 2.")
+                
+                # # Draw a circle for the slot
+                ax.add_patch(plt.Circle((col + 0.5, n_rows - row - 0.5), 0.4, color=color))
+
+        # Add grid lines
+        for row in range(n_rows + 1):
+            ax.hlines(row, 0, n_cols, colors=line_color, linewidth=0.5)  # Horizontal lines
+        for col in range(n_cols + 1):
+            ax.vlines(col, 0, n_rows, colors=line_color, linewidth=0.5)  # Vertical lines
+
+        # Set grid limits and remove axes
+        ax.set_xlim(0, n_cols)
+        ax.set_ylim(0, n_rows)
+        ax.set_aspect('equal')
+        ax.axis('off')
+
+        # # Set a title for each grid
+        ax.set_title(f"Game State {self.turn}", fontsize=14)
+
+        # Show the plot
+        plt.show()
+        # return fig, ax
+
+
+
+
 
 class Node:
     def __init__(self, state: Board, parent=None):
@@ -305,8 +365,10 @@ if __name__ == '__main__':
     board.make_move(2,1)
     board.make_move(3,2)
 
-    # Now we can test out the MCTS algorithm
-    best_move = monte_carlo_tree_search(board,1,itermax=100)
+    board.display_board()
 
-    print(f'The best move to make is column {best_move}')
+    # Now we can test out the MCTS algorithm
+    # best_move = monte_carlo_tree_search(board,1,itermax=100)
+
+    # print(f'The best move to make is column {best_move}')
     print(board)

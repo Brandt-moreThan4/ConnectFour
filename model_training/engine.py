@@ -37,7 +37,7 @@ def setup_logging() -> None:
 
 class DataBase:
 
-    def __init__(self,master_file:str) -> None:
+    def __init__(self,master_file:str='model_training/data/master_db.json') -> None:
         self.master_file = master_file
         self.load()
         
@@ -117,6 +117,7 @@ def run_simulation_arena(arena_players:list[player.Player],simulation_count:int,
         if i % checkpoints == 0 and data_db is not None:
             logging.info(f'Checkpoint Reached: {i} simulations done')
             data_db.add_data(all_game_data)
+            all_game_data = []
 
     if data_db is not None:
         data_db.add_data(all_game_data)     
@@ -125,9 +126,9 @@ def run_simulation_arena(arena_players:list[player.Player],simulation_count:int,
 if __name__ == '__main__':
     setup_logging()
     DATA_FILE = 'model_training/data/master_db.json'
-    DATA_FILE = 'model_training/data/combined_toy.json'   
+    # DATA_FILE = 'model_training/data/combined_toy.json'   
     database = DataBase(DATA_FILE) 
-    NUMBER_OF_GAMES = 15
+    NUMBER_OF_GAMES = 50_000
     CHECK_POINTS = 100
 
     players = [monty_100,monty_1000]
