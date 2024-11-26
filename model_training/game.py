@@ -6,8 +6,10 @@ import time
 import random
 import uuid
 
-from player import Player
-from board import Board
+# from player import Player
+# from board import Board
+from model_training.player import Player
+from model_training.board import Board
 
 
 @dataclass

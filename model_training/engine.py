@@ -5,10 +5,12 @@ import random
 
 from pathlib import Path
 
-# import constants as constants
-from game import Game, GameData
-from board import Board
-import player
+from model_training import player
+from model_training.game import Game, GameData
+from model_training.board import Board
+# from game import Game, GameData
+# from board import Board
+# import player
 
 # Big bank of players that may be needed
 stupid_player = player.RandomNaivePlayer('Stupid',token=None)
@@ -133,5 +135,7 @@ if __name__ == '__main__':
 
     players = [monty_100,monty_1000]
     players = [monty_50,monty_100]
+    players = [monty_50,monty_150]
+    players = [monty_50,monty_51,monty_100,monty_150,monty_200,monty_500,monty_1000]    
     run_simulation_arena(players,NUMBER_OF_GAMES,data_db=database,checkpoints=CHECK_POINTS)
 
