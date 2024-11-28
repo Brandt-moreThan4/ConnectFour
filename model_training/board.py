@@ -208,6 +208,28 @@ class Board:
 
 
 
+    def convert_to_plus_minus(self) -> np.ndarray:
+        """
+        Convert the board grid to a 2D numpy array with:
+        +1 for the current player's token,
+        -1 for the opponent's token,
+        0 for empty cells.
+        """
+
+        # Map the tokens directly in a single step
+        token_map = {self.turn_token: 1, switch_token(self.turn_token): -1, 0: 0}
+        vectorized_map = np.vectorize(token_map.get)  # Efficient mapping
+        new_grid = vectorized_map(self.grid)
+        return new_grid
+
+    @staticmethod
+    def make_boards_from_moves(moves:list) -> list['Board']:
+        '''Create a list of Board objects based on a list of moves.'''
+
+        boards = [Board.from_turn_sequence(moves[:i]) for i in range(1, len(moves)+1)]
+        # Add on the initial empty board
+        boards = [Board()] + boards
+        return boards
 
 
 class Node:
@@ -370,7 +392,8 @@ if __name__ == '__main__':
     board.make_move(2,1)
     board.make_move(3,2)
 
-    board.display_board()
+    # board.display_board()
+    new_grid = board.convert_to_plus_minus()
 
     # Now we can test out the MCTS algorithm
     # best_move = monte_carlo_tree_search(board,1,itermax=100)
