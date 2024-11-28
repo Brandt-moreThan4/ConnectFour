@@ -24,6 +24,8 @@ monty_150 = player.MonteCarloPlayer('Monty150',token=None,simulations=150)
 monty_200 = player.MonteCarloPlayer('Monty149',token=None,simulations=200)
 monty_51 = player.MonteCarloPlayer('Monty51',token=None,simulations=51) 
 
+mod_2 = player.Mod_2('Mod_2',token=None)
+
 
 def setup_logging() -> None:
     '''Set up logging for the simulation which will log to a file and the terminal.'''
@@ -105,7 +107,7 @@ def simulation_stats(all_game_data:list[GameData]):
 
 
 
-def run_simulation_arena(arena_players:list[player.Player],simulation_count:int,output_file:str=None, data_db:DataBase=None,checkpoints=500) -> None:
+def run_simulation_arena(arena_players:list[player.Player],simulation_count:int, data_db:DataBase=None,checkpoints=500) -> None:
 
     all_game_data = []
     for i in range(simulation_count):
@@ -137,5 +139,8 @@ if __name__ == '__main__':
     players = [monty_50,monty_100]
     players = [monty_50,monty_150]
     players = [monty_50,monty_51,monty_100,monty_150,monty_200,monty_500,monty_1000]    
-    run_simulation_arena(players,NUMBER_OF_GAMES,data_db=database,checkpoints=CHECK_POINTS)
+    players = [monty_50,mod_2]
+
+    # run_simulation_arena(players,NUMBER_OF_GAMES,data_db=database,checkpoints=CHECK_POINTS)
+    run_simulation_arena(players,simulation_count=10)
 

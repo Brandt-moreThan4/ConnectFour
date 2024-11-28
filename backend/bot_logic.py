@@ -38,4 +38,18 @@ def get_bot_move(board_data) -> int | None:
     else:
         col_to_play = int(bot_player.get_move(board))
         return col_to_play
+    
+def get_bot_move(board_data) -> int | None:
+    
+
+    board = Board.from_lists(board_data)
+    # bot_player = player.RandomNotStupidPlayer('bot', 2)
+    bot_player = player.Mod_2('bot', 2)
+
+    # Randomly select a column for now
+    if board.is_full():
+        return None  # No moves available (game might be over)
+    else:
+        col_to_play = bot_player.get_move(board)
+        return col_to_play
 

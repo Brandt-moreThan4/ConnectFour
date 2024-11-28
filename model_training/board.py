@@ -208,7 +208,7 @@ class Board:
 
 
 
-    def convert_to_plus_minus(self) -> np.ndarray:
+    def convert_to_plus_minus(self,turn_token=None) -> np.ndarray:
         """
         Convert the board grid to a 2D numpy array with:
         +1 for the current player's token,
@@ -216,8 +216,11 @@ class Board:
         0 for empty cells.
         """
 
+        if turn_token is None:
+            turn_token = self.turn_token
+
         # Map the tokens directly in a single step
-        token_map = {self.turn_token: 1, switch_token(self.turn_token): -1, 0: 0}
+        token_map = {turn_token: 1, switch_token(turn_token): -1, 0: 0}
         vectorized_map = np.vectorize(token_map.get)  # Efficient mapping
         new_grid = vectorized_map(self.grid)
         return new_grid
