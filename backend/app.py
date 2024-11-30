@@ -7,7 +7,7 @@ import sys
 PARENT_DIR = Path(__file__).resolve().parent.parent
 sys.path.append(str(PARENT_DIR))
 
-from bot_logic import get_bot_move
+from backend.bot_logic import get_bot_move
 
 
 app = Flask(__name__, static_folder="../frontend", static_url_path="/")
