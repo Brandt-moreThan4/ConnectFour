@@ -1,12 +1,27 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS  # Import the CORS module
 import time
+from pathlib import Path
+import sys
+
+PARENT_DIR = Path(__file__).resolve().parent.parent
+sys.path.append(str(PARENT_DIR))
 
 from bot_logic import get_bot_move
 
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="../frontend", static_url_path="/")
 CORS(app)  # Enable CORS for all routes by default
+
+
+@app.route('/')
+def serve_index():
+    """
+    Serve the index.html page from the frontend directory.
+    """
+    return send_from_directory(app.static_folder, 'index.html')
+
+
 
 @app.route('/api/move', methods=['POST'])
 def get_move():

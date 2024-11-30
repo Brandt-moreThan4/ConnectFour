@@ -3,9 +3,6 @@ from pathlib import Path
 import sys
 
 
-PARENT_DIR = Path(__file__).resolve().parent.parent
-sys.path.append(str(PARENT_DIR))
-
 from model_training.board import Board
 from model_training import player
 
@@ -30,7 +27,7 @@ def get_bot_move(board_data) -> int | None:
 
     board = Board.from_lists(board_data)
     # bot_player = player.RandomNotStupidPlayer('bot', 2)
-    bot_player = player.MonteCarloPlayer('bot', 2, 1000)
+    bot_player = player.MonteCarloPlayer('bot', 2, 100)
 
     # Randomly select a column for now
     if board.is_full():
@@ -39,17 +36,17 @@ def get_bot_move(board_data) -> int | None:
         col_to_play = int(bot_player.get_move(board))
         return col_to_play
     
-def get_bot_move(board_data) -> int | None:
+# def get_bot_move(board_data) -> int | None:
     
 
-    board = Board.from_lists(board_data)
-    # bot_player = player.RandomNotStupidPlayer('bot', 2)
-    bot_player = player.Mod_2('bot', 2)
+#     board = Board.from_lists(board_data)
+#     # bot_player = player.RandomNotStupidPlayer('bot', 2)
+#     bot_player = player.Mod_2('bot', 2)
 
-    # Randomly select a column for now
-    if board.is_full():
-        return None  # No moves available (game might be over)
-    else:
-        col_to_play = bot_player.get_move(board)
-        return col_to_play
+#     # Randomly select a column for now
+#     if board.is_full():
+#         return None  # No moves available (game might be over)
+#     else:
+#         col_to_play = bot_player.get_move(board)
+#         return col_to_play
 
