@@ -39,7 +39,7 @@ def get_move():
     col = get_bot_move(board)
 
     # It's unnerving if the bot plays so quickly
-    time.sleep(1)
+    time.sleep(.5)
 
     # Return the bot's chosen column as a JSON response
     return jsonify({"column": col})
