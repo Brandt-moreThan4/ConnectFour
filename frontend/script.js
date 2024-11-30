@@ -48,7 +48,7 @@ function handleCellClick(event) {
 async function getBotMove(board) {
     try {
         // Make a request to the backend to get the bot's move
-        const response = await fetch('http://127.0.0.1:5000/api/move', {
+        const response = await fetch('api/move', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
