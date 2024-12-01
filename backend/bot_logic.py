@@ -3,8 +3,8 @@ from pathlib import Path
 import sys
 
 
-from model_training.board import Board
-from model_training import player
+from game_mechanics.board import Board
+from game_mechanics import player
 
 
 def get_bot_move(board) -> int | None:
