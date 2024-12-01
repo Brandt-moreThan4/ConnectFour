@@ -8,8 +8,8 @@ import uuid
 
 # from player import Player
 # from board import Board
-from model_training.player import Player
-from model_training.board import Board
+from game_mechanics.player import Player
+from game_mechanics.board import Board
 
 
 @dataclass

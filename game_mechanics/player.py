@@ -1,8 +1,8 @@
 # import tensorflow as tf
 from pathlib import Path
 
-from model_training.board import Board
-from model_training.mcts import monte_carlo_tree_search
+from game_mechanics.board import Board
+from game_mechanics.mcts import monte_carlo_tree_search
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 MODELS_FOLDER = PROJECT_ROOT / 'model_training' / 'models'

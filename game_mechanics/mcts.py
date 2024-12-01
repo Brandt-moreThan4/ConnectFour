@@ -1,7 +1,7 @@
 import numpy as np
 import random
 
-from model_training.board import Board
+from game_mechanics.board import Board
 
 
 

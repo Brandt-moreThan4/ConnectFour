@@ -5,9 +5,9 @@ import random
 
 from pathlib import Path
 
-from model_training import player
-from model_training.game import Game, GameData
-from model_training.board import Board
+from game_mechanics import player
+from game_mechanics.game import Game, GameData
+from game_mechanics.board import Board
 # from game import Game, GameData
 # from board import Board
 # import player
@@ -41,7 +41,7 @@ def setup_logging() -> None:
 
 class DataBase:
 
-    def __init__(self,master_file:str='model_training/data/master_db.json') -> None:
+    def __init__(self,master_file:str='data/master_db.json') -> None:
         self.master_file = master_file
         self.load()
         
@@ -129,7 +129,7 @@ def run_simulation_arena(arena_players:list[player.Player],simulation_count:int,
 
 if __name__ == '__main__':
     setup_logging()
-    DATA_FILE = 'model_training/data/master_db.json'
+    DATA_FILE = 'data/master_db.json'
     # DATA_FILE = 'model_training/data/combined_toy.json'   
     database = DataBase(DATA_FILE) 
     NUMBER_OF_GAMES = 50_000
