@@ -8,9 +8,9 @@
 </head>
 <body>
     <h1>Connect 4</h1>
+    <h2 class="subheader">A Brandt Green Production</h2>     
     <div id="board">
-        <!-- Manually creating a 6x7 board (6 rows, 7 columns) -->
-        <!-- Row 1 -->
+        <!-- Dynamically creating a 6x7 board -->
         <div class="cell" data-row="0" data-col="0"></div>
         <div class="cell" data-row="0" data-col="1"></div>
         <div class="cell" data-row="0" data-col="2"></div>
@@ -18,7 +18,7 @@
         <div class="cell" data-row="0" data-col="4"></div>
         <div class="cell" data-row="0" data-col="5"></div>
         <div class="cell" data-row="0" data-col="6"></div>
-        <!-- Row 2 -->
+        <!-- Add rows 1 through 5 here -->
         <div class="cell" data-row="1" data-col="0"></div>
         <div class="cell" data-row="1" data-col="1"></div>
         <div class="cell" data-row="1" data-col="2"></div>
@@ -26,7 +26,6 @@
         <div class="cell" data-row="1" data-col="4"></div>
         <div class="cell" data-row="1" data-col="5"></div>
         <div class="cell" data-row="1" data-col="6"></div>
-        <!-- Row 3 -->
         <div class="cell" data-row="2" data-col="0"></div>
         <div class="cell" data-row="2" data-col="1"></div>
         <div class="cell" data-row="2" data-col="2"></div>
@@ -34,7 +33,6 @@
         <div class="cell" data-row="2" data-col="4"></div>
         <div class="cell" data-row="2" data-col="5"></div>
         <div class="cell" data-row="2" data-col="6"></div>
-        <!-- Row 4 -->
         <div class="cell" data-row="3" data-col="0"></div>
         <div class="cell" data-row="3" data-col="1"></div>
         <div class="cell" data-row="3" data-col="2"></div>
@@ -42,7 +40,6 @@
         <div class="cell" data-row="3" data-col="4"></div>
         <div class="cell" data-row="3" data-col="5"></div>
         <div class="cell" data-row="3" data-col="6"></div>
-        <!-- Row 5 -->
         <div class="cell" data-row="4" data-col="0"></div>
         <div class="cell" data-row="4" data-col="1"></div>
         <div class="cell" data-row="4" data-col="2"></div>
@@ -50,7 +47,6 @@
         <div class="cell" data-row="4" data-col="4"></div>
         <div class="cell" data-row="4" data-col="5"></div>
         <div class="cell" data-row="4" data-col="6"></div>
-        <!-- Row 6 -->
         <div class="cell" data-row="5" data-col="0"></div>
         <div class="cell" data-row="5" data-col="1"></div>
         <div class="cell" data-row="5" data-col="2"></div>
@@ -60,6 +56,7 @@
         <div class="cell" data-row="5" data-col="6"></div>
     </div>
     <p id="status"></p>
+    <button id="reset" onclick="window.location.reload()">Reset Game</button>
     <script src="script.js"></script>
 </body>
 </html>

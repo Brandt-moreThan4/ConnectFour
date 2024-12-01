@@ -5,7 +5,7 @@ from typing import Union
 import matplotlib.pyplot as plt
 
 # Feels sloppy?
-TOKEN_MAP = {'red':1,'yellow':2}
+TOKEN_MAP = {'red':1,'yellow':2,'black':2}
 ROWS, COLUMNS = 6,7
 
 class Board:

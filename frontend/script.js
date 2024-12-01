@@ -34,7 +34,7 @@ function handleCellClick(event) {
                 disableBoard();
             } else {
                 // Switch to the bot's turn
-                currentPlayer = 'yellow';
+                currentPlayer = 'black';
                 document.getElementById('status').textContent = `Bot's turn...`;
 
                 // Call function to get the bot's move
