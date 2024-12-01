@@ -9,7 +9,31 @@
 <body>
     <h1>Connect 4</h1>
     <h2 class="subheader">A Brandt Green Production</h2>     
-    <div id="board">
+
+    <!-- Settings Section -->
+    <div id="settings">
+        <h3>Choose Game Settings</h3>
+        <div>
+            <label for="player1">Player 1:</label>
+            <select id="player1">
+                <option value="human">Human</option>
+                <option value="easy-bot">Easy Bot</option>
+                <option value="hard-bot">Hard Bot</option>
+            </select>
+        </div>
+        <div>
+            <label for="player2">Player 2:</label>
+            <select id="player2">
+                <option value="human">Human</option>
+                <option value="easy-bot">Easy Bot</option>
+                <option value="hard-bot">Hard Bot</option>
+            </select>
+        </div>
+        <button id="start-game">Start Game</button>
+    </div>
+
+
+    <div id="board" class="disabled">
         <!-- Dynamically creating a 6x7 board -->
         <div class="cell" data-row="0" data-col="0"></div>
         <div class="cell" data-row="0" data-col="1"></div>

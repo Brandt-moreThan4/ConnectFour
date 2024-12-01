@@ -2,9 +2,27 @@ const columns = 7;
 const rows = 6;
 let currentPlayer = 'red';
 let board = Array(rows).fill(null).map(() => Array(columns).fill(null));
+let player1Type = 'human';
+let player2Type = 'human';
 
 // Display initial status
-document.getElementById('status').textContent = `${currentPlayer.toUpperCase()}'s turn`;
+document.getElementById('status').textContent = `Select game settings to start.`;
+
+// Attach event listener to the "Start Game" button
+document.getElementById('start-game').addEventListener('click', () => {
+    // Get selected player types
+    player1Type = document.getElementById('player1').value;
+    player2Type = document.getElementById('player2').value;
+
+    // Enable the game board
+    document.getElementById('board').classList.remove('disabled');
+
+    // Hide the settings section
+    document.getElementById('settings').style.display = 'none';
+
+    // Display initial status
+    document.getElementById('status').textContent = `${currentPlayer.toUpperCase()}'s turn`;
+});
 
 // Attach click event listeners to all cells
 const cells = document.querySelectorAll('.cell');
@@ -13,8 +31,8 @@ cells.forEach(cell => {
 });
 
 function handleCellClick(event) {
-    // Only allow player moves if it's their turn
-    if (currentPlayer !== 'red') return;
+    // Only allow player moves if the board is active
+    if (document.getElementById('board').classList.contains('disabled')) return;
 
     const col = parseInt(event.target.dataset.col);
 
@@ -30,41 +48,39 @@ function handleCellClick(event) {
 
             // Check if the move results in a win
             if (checkWin(r, col)) {
-                // document.getElementById('status').textContent = `${currentPlayer.toUpperCase()} wins!`;
                 displayWinMessage(currentPlayer);
                 disableBoard();
             } else {
-                // Switch to the bot's turn
-                currentPlayer = 'black';
-                document.getElementById('status').textContent = `Bot's turn...`;
-
-                // Call function to get the bot's move
-                getBotMove(board);
+                switchTurns();
             }
             break;
         }
     }
 }
 
-function displayWinMessage(winner) {
-    const statusElement = document.getElementById('status');
-    statusElement.textContent = `🎉 !${winner.toUpperCase()} WINS! 🎉`;
+function switchTurns() {
+    if (currentPlayer === 'red') {
+        currentPlayer = 'black';
+        document.getElementById('status').textContent = `BLACK's turn`;
 
-    // Add vibrant styling
-    statusElement.style.color = winner === 'red' ? 'red' : 'black';
-    statusElement.style.fontSize = '2rem';
-    statusElement.style.fontWeight = 'bold';
-    statusElement.style.textShadow = `0 0 10px ${winner === 'red' ? 'red' : 'black'}, 
-                                      0 0 20px ${winner === 'red' ? 'red' : 'black'}`;
+        if (player2Type !== 'human') {
+            // Call bot logic for Player 2
+            getBotMove(board, 'black', player2Type);
+        }
+    } else {
+        currentPlayer = 'red';
+        document.getElementById('status').textContent = `RED's turn`;
 
-    // Add flashing animation
-    statusElement.classList.add('win-flash');
+        if (player1Type !== 'human') {
+            // Call bot logic for Player 1
+            getBotMove(board, 'red', player1Type);
+        }
+    }
 }
 
-
-async function getBotMove(board) {
+async function getBotMove(board, player, difficulty) {
     try {
-        // Make a request to the backend to get the bot's move
+        // Simulate bot behavior or call an API
         const response = await fetch('api/move', {
             method: 'POST',
             headers: {
@@ -72,7 +88,8 @@ async function getBotMove(board) {
             },
             body: JSON.stringify({
                 board: board,
-                player: 'bot', // Optional, if needed by your backend logic
+                player: player,
+                difficulty: difficulty,
             }),
         });
 
@@ -83,22 +100,16 @@ async function getBotMove(board) {
         if (botCol !== null) {
             for (let r = rows - 1; r >= 0; r--) {
                 if (!board[r][botCol]) {
-                    // Update the board state
-                    board[r][botCol] = currentPlayer;
+                    board[r][botCol] = player;
 
-                    // Find the cell element in the DOM
                     const cell = document.querySelector(`.cell[data-row='${r}'][data-col='${botCol}']`);
-                    cell.classList.add('taken', currentPlayer);
+                    cell.classList.add('taken', player);
 
-                    // Check if the bot's move results in a win
                     if (checkWin(r, botCol)) {
-                        // document.getElementById('status').textContent = `${currentPlayer.toUpperCase()} wins!`;
-                        displayWinMessage(currentPlayer);
+                        displayWinMessage(player);
                         disableBoard();
                     } else {
-                        // Switch back to the player's turn
-                        currentPlayer = 'red';
-                        document.getElementById('status').textContent = `${currentPlayer.toUpperCase()}'s turn`;
+                        switchTurns();
                     }
                     break;
                 }
@@ -110,20 +121,29 @@ async function getBotMove(board) {
     }
 }
 
+function displayWinMessage(winner) {
+    const statusElement = document.getElementById('status');
+    statusElement.textContent = `🎉 ${winner.toUpperCase()} WINS! 🎉`;
+
+    statusElement.style.color = winner === 'red' ? 'red' : 'black';
+    statusElement.style.fontSize = '2rem';
+    statusElement.style.fontWeight = 'bold';
+    statusElement.style.textShadow = `0 0 10px ${winner === 'red' ? 'red' : 'black'}, 
+                                      0 0 20px ${winner === 'red' ? 'red' : 'black'}`;
+    statusElement.classList.add('win-flash');
+}
+
 function disableBoard() {
     cells.forEach(cell => cell.removeEventListener('click', handleCellClick));
 }
 
-
 function checkWin(row, col) {
-    // Helper function to count consecutive pieces in a specified direction
     function count(directionRow, directionCol) {
         let r = row + directionRow;
         let c = col + directionCol;
         let count = 0;
         const positions = [[row, col]];
 
-        // Continue counting while within board bounds and pieces match the current player
         while (
             r >= 0 &&
             r < rows &&
@@ -139,12 +159,11 @@ function checkWin(row, col) {
         return { count, positions };
     }
 
-    // Check for four-in-a-row in various directions
     const directions = [
-        [0, 1],  // Horizontal right
-        [1, 0],  // Vertical down
-        [1, 1],  // Diagonal \
-        [1, -1]  // Diagonal /
+        [0, 1],
+        [1, 0],
+        [1, 1],
+        [1, -1],
     ];
 
     for (const [dRow, dCol] of directions) {
@@ -161,12 +180,23 @@ function checkWin(row, col) {
     return false;
 }
 
-// Highlight the winning cells
 function highlightWinningCells(winningCells) {
     winningCells.forEach(([r, c]) => {
         const cell = document.querySelector(`.cell[data-row='${r}'][data-col='${c}']`);
         if (cell) {
             cell.classList.add('winning-cell');
         }
+    });
+}
+
+function resetGame() {
+    board = Array(rows).fill(null).map(() => Array(columns).fill(null));
+    currentPlayer = 'red';
+    document.getElementById('status').textContent = 'Select game settings to start.';
+    document.getElementById('settings').style.display = 'block';
+    document.getElementById('board').classList.add('disabled');
+    cells.forEach(cell => {
+        cell.className = 'cell';
+        cell.addEventListener('click', handleCellClick);
     });
 }
