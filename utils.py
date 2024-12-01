@@ -114,6 +114,7 @@ if __name__ == "__main__":
     FOLDER = r'C:\Users\User\OneDrive\Desktop\Code\ConnectFour'
     # FOLDER = r'C:\Users\User\OneDrive\Desktop\Code\ConnectFour\model_training'
     # FOLDER = r'C:\Users\User\OneDrive\Desktop\Code\ConnectFour\backend'    
+    FOLDER = r'C:\Users\User\OneDrive\Desktop\Code\ConnectFour\frontend'        
     EXCLUSIONS = ['.git', 'node_modules','ipynb','data','archive','__pycache__','old']  # Add any other folder/file names you want to exclude
 
     output_name = Path(FOLDER).name + '_master_project_document.md'

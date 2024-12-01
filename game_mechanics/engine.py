@@ -2,15 +2,13 @@ import pandas as pd
 import logging
 import json
 import random
-
+from typing import Union
 from pathlib import Path
 
 from game_mechanics import player
 from game_mechanics.game import Game, GameData
 from game_mechanics.board import Board
-# from game import Game, GameData
-# from board import Board
-# import player
+
 
 # Big bank of players that may be needed
 stupid_player = player.RandomNaivePlayer('Stupid',token=None)
@@ -23,7 +21,6 @@ monty_1000 = player.MonteCarloPlayer('Monty1000',token=None,simulations=1000)
 monty_150 = player.MonteCarloPlayer('Monty150',token=None,simulations=150)
 monty_200 = player.MonteCarloPlayer('Monty149',token=None,simulations=200)
 monty_51 = player.MonteCarloPlayer('Monty51',token=None,simulations=51) 
-
 mod_2 = player.Mod_2('Mod_2',token=None)
 
 
@@ -73,7 +70,7 @@ class DataBase:
         return f'DataBase({self.master_file}) - {len(self.data)} records'
 
 
-def run_simulation(p1:player.Player,p2:player.Player) -> Game:
+def play_game(p1:player.Player,p2:player.Player) -> Game:
 
     # Make sure the players have their tokens set
     p1.token = Board.TOKEN_1
@@ -93,18 +90,25 @@ def run_simulations(p1:player.Player,p2:player.Player,sim_count:int=100,randomiz
         if randomize_order:
             p1,p2 = random.sample([p1,p2],2)
 
-        game = run_simulation(p1,p2)
+        game = play_game(p1,p2)
         all_game_data.append(game.game_data)
         # logging.info(f'Simulation {i+1} done')
     return all_game_data
 
-def simulation_stats(all_game_data:list[GameData]):
 
-    data_as_dicts = [game_data.to_dict() for game_data in all_game_data]
-    stats = {}
-    df = pd.DataFrame(data_as_dicts)
+def evaluate_player(player:player.Player, opponent:player.Player, sim_count:int=30) -> dict:
+    ''' Evaluate a player against an opponent. '''
 
+    data = run_simulations(player,opponent,sim_count)
 
+    df = pd.DataFrame([game_data.to_dict() for game_data in data])
+    win_rates = df['winner_id'].value_counts(normalize=True)
+
+    return {
+        'win_rate':win_rates.get(player.player_id,0),
+        'loss_rate':win_rates.get(opponent.player_id,0),
+        'tie_rate':win_rates.get('Tie',0),
+    }
 
 
 def run_simulation_arena(arena_players:list[player.Player],simulation_count:int, data_db:DataBase=None,checkpoints=500) -> None:
@@ -113,7 +117,7 @@ def run_simulation_arena(arena_players:list[player.Player],simulation_count:int,
     for i in range(simulation_count):
 
         player_1, player_2 = random.sample(arena_players,2)
-        game = run_simulation(player_1,player_2)
+        game = play_game(player_1,player_2)
 
         all_game_data.append(game.game_data.to_dict())
         logging.info(f'Simulation {i+1} done')
@@ -125,6 +129,8 @@ def run_simulation_arena(arena_players:list[player.Player],simulation_count:int,
 
     if data_db is not None:
         data_db.add_data(all_game_data)     
+    
+    return all_game_data
         
 
 if __name__ == '__main__':
@@ -142,5 +148,9 @@ if __name__ == '__main__':
     # players = [monty_50,mod_2]
 
     # run_simulation_arena(players,NUMBER_OF_GAMES,data_db=database,checkpoints=CHECK_POINTS)
-    run_simulation_arena(players,simulation_count=10)
+    # run_simulation_arena(players,simulation_count=10)
+    # data = run_simulations(monty_50,monty_100,sim_count=10)
+    # stats = simulation_stats(data)
+    # eval = evaluate_player(monty_50,monty_150,sim_count=10)
 
+    print('All done!')
