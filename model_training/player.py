@@ -1,8 +1,8 @@
-import tensorflow as tf
+# import tensorflow as tf
 from pathlib import Path
-# from board import Board, simulate_game, monte_carlo_tree_search
-# from .board import Board, simulate_game, monte_carlo_tree_search
-from model_training.board import Board, simulate_game, monte_carlo_tree_search
+
+from model_training.board import Board
+from model_training.mcts import monte_carlo_tree_search
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 MODELS_FOLDER = PROJECT_ROOT / 'model_training' / 'models'
@@ -104,4 +104,4 @@ class Mod_2(Player):
     
     def _load_model(self, mod_name: str):
         mod_name = MODELS_FOLDER / mod_name
-        self.model = tf.keras.models.load_model(mod_name)
+        # self.model = tf.keras.models.load_model(mod_name)

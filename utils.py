@@ -112,10 +112,12 @@ if __name__ == "__main__":
 
     # Example usage:
     FOLDER = r'C:\Users\User\OneDrive\Desktop\Code\ConnectFour'
-    # FOLDER = r'C:\Users\User\OneDrive\Desktop\Code\ConnectFour\model_training'
-    EXCLUSIONS = ['.git', 'node_modules','ipynb']  # Add any other folder/file names you want to exclude
+    FOLDER = r'C:\Users\User\OneDrive\Desktop\Code\ConnectFour\model_training'
+    # FOLDER = r'C:\Users\User\OneDrive\Desktop\Code\ConnectFour\backend'    
+    EXCLUSIONS = ['.git', 'node_modules','ipynb','data','archive','__pycache__','old']  # Add any other folder/file names you want to exclude
 
-    create_master_markdown(FOLDER, exclusions=EXCLUSIONS)
+    output_name = Path(FOLDER).name + '_master_project_document.md'
+    create_master_markdown(FOLDER, exclusions=EXCLUSIONS,output_file=output_name)
 
     # # Combine all JSON files in the folder and subfolders
     # DATA_FOLDER = Path(FOLDER) / 'data'

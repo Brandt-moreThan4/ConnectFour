@@ -139,7 +139,7 @@ if __name__ == '__main__':
     players = [monty_50,monty_100]
     players = [monty_50,monty_150]
     players = [monty_50,monty_51,monty_100,monty_150,monty_200,monty_500,monty_1000]    
-    players = [monty_50,mod_2]
+    # players = [monty_50,mod_2]
 
     # run_simulation_arena(players,NUMBER_OF_GAMES,data_db=database,checkpoints=CHECK_POINTS)
     run_simulation_arena(players,simulation_count=10)
