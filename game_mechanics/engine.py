@@ -10,7 +10,7 @@ from game_mechanics.game import Game, GameData
 from game_mechanics.board import Board
 
 
-# Big bank of players that may be needed
+# Big bank of players that may be needed in simulations
 stupid_player = player.RandomNaivePlayer('Stupid',token=None)
 not_stupid_player = player.RandomNotStupidPlayer('Not Stupid',token=None)
 monty_50 = player.MonteCarloPlayer('Monty50',token=None,simulations=50)

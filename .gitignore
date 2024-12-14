@@ -1,6 +1,7 @@
 # Ignore files saved inside the data foler
-# data/*.csv
-data
+data/old
+data/stable
+# data
 
 # Cpython
 *.pyc
