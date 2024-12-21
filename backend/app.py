@@ -7,15 +7,15 @@ import sys
 PARENT_DIR = Path(__file__).resolve().parent.parent
 sys.path.append(str(PARENT_DIR))
 
-from backend.bot_logic import get_bot_move
+from backend.bot_orchestration import get_bot_move
 
 
 app = Flask(__name__, static_folder="../frontend", static_url_path="/")
-CORS(app)  # Enable CORS for all routes by default
+CORS(app)  # Enable CORS for all routes by defaultv
 
 
 @app.route('/')
-def serve_index():
+def serve_home_page():
     """
     Serve the index.html page from the frontend directory.
     """
@@ -38,7 +38,7 @@ def get_move():
     # Call the function to determine the bot's move
     col = get_bot_move(board)
 
-    # It's unnerving if the bot plays so quickly
+    # It's unnerving if the bot plays too quickly
     time.sleep(.5)
 
     # Return the bot's chosen column as a JSON response

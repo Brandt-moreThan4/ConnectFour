@@ -28,7 +28,6 @@ class Player:
     @property
     def player_id(self) -> str:
         raise NotImplementedError
-    
 
 class RandomNaivePlayer(Player):
     
@@ -52,7 +51,6 @@ class RandomNotStupidPlayer(Player):
         else:
             return board.get_random_move()
     
-
 class MonteCarloPlayer(Player):
     def __init__(self, name: str, token: int, simulations: int) -> None:
         super().__init__(name, token)
@@ -68,7 +66,6 @@ class MonteCarloPlayer(Player):
             move = monte_carlo_tree_search(board, perspective_token=self.token,itermax=self.simulations)
         return move
     
-
 class Mod_2(Player):
     def __init__(self, name: str, token: int) -> None:
         super().__init__(name, token)
@@ -94,7 +91,7 @@ class Mod_2(Player):
             new_board = board.get_copy()
             new_board.make_move(move, self.token)
             # Get the board grid in the format expected by the model
-            board_state = new_board.convert_to_plus_minus(turn_token=self.token)
+            board_state = new_board.convert_to_plus_minus(perspective=self.token)
             board_state_tensor = board_state.reshape(1, 6, 7, 1)
             predicted_reward = self.model.predict(board_state_tensor)[0][0]
             predicted_rewards.append(predicted_reward)
@@ -105,3 +102,6 @@ class Mod_2(Player):
     def _load_model(self, mod_name: str):
         mod_name = MODELS_FOLDER / mod_name
         # self.model = tf.keras.models.load_model(mod_name)
+
+
+
