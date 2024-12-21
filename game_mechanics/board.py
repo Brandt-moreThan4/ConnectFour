@@ -65,6 +65,9 @@ class Board:
                 if cell_value is not None:
                     board.grid[row,col] = TOKEN_MAP[cell_value]
         
+        # Set the appropriate turn token
+        board.turn_token = 2 if board.turn % 2 == 0 else 1
+
         return board
 
 

@@ -29,14 +29,11 @@ def get_move():
     Handle requests from the frontend to get the bot's move.
     Expects a JSON payload with the current board state.
     """
-    data = request.json
-    board = data.get('board')  # Get the current board state from the request
 
-    if board is None:
-        return jsonify({"error": "Board state not provided"}), 400
+    data_packet = request.json
 
     # Call the function to determine the bot's move
-    col = get_bot_move(board)
+    col = get_bot_move(data_packet)
 
     # It's unnerving if the bot plays too quickly
     time.sleep(.5)

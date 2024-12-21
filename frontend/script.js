@@ -22,7 +22,13 @@ document.getElementById('start-game').addEventListener('click', () => {
 
     // Display initial status
     document.getElementById('status').textContent = `${currentPlayer.toUpperCase()}'s turn`;
+
+    // If Player 1 is not human, call the bot immediately
+    if (player1Type !== 'human' && currentPlayer === 'red') {
+        getBotMove(board, 'red', player1Type);
+    }
 });
+
 
 // Attach click event listeners to all cells
 const cells = document.querySelectorAll('.cell');
@@ -78,7 +84,7 @@ function switchTurns() {
     }
 }
 
-async function getBotMove(board, player, difficulty) {
+async function getBotMove(board, player, bot_id) {
     try {
         // Simulate bot behavior or call an API
         const response = await fetch('api/move', {
@@ -89,7 +95,7 @@ async function getBotMove(board, player, difficulty) {
             body: JSON.stringify({
                 board: board,
                 player: player,
-                difficulty: difficulty,
+                bot_id: bot_id,
             }),
         });
 
@@ -200,3 +206,5 @@ function resetGame() {
         cell.addEventListener('click', handleCellClick);
     });
 }
+
+

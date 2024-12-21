@@ -7,6 +7,8 @@ from game_mechanics.board import Board
 from game_mechanics import player
 
 
+TOKEN_MAP = {'red':1,'black':2}
+
 AVAILABLE_PLAYERS = {
     'random_naive': player.RandomNaivePlayer('Random',token=None),
     'random_not_stupid': player.RandomNotStupidPlayer('Random Not Stupid',token=None),
@@ -18,17 +20,31 @@ AVAILABLE_PLAYERS = {
 
 
 
-def get_bot_move(board_data) -> int | None:
+
+def get_bot_move(data:dict) -> int | None:
     
+    # Grab the data from the JSON payload
+    board_data = data['board']
+    player_tag = data['player']
+    bot_id = data['bot_id']
 
+
+    # Create the board object & the bot player from the game mechanics
     board = Board.from_lists(board_data)
-    # bot_player = player.RandomNotStupidPlayer('bot', 2)
-    bot_player = player.MonteCarloPlayer('bot', 2, 100)
+    bot_player = create_player(player_tag, bot_id)
 
-    # Randomly select a column for now
+
     if board.is_full():
         return None  # No moves available (game might be over)
+        # Hoonestly don't think this is necessary anymore. I think the frontend should handle this.
     else:
         col_to_play = int(bot_player.get_move(board))
         return col_to_play
     
+
+def create_player(player_id:str, bot_id:str) -> player.Player:
+    player = AVAILABLE_PLAYERS[bot_id]
+    player.token = TOKEN_MAP[player_id]
+
+    return player
+
